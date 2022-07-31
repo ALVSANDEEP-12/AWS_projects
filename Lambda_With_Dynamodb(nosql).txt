@@ -1,0 +1,99 @@
+Lambda Function With DynamoDb:
+
+what is the purpose of roles and users?
+Users: Assign permissions-->root account-->read access or write access.
+roles: service to service agreement
+For Dynamodb and lambda-->we need roles.
+-->Role creation for communication(connect dynamodb and lambda)
+-->Dynamodb(nosql)-->tablename and key value and -->store the values
+
+Note:"Function-->fxn"
+
+Step 1: Create role any name attach 4 policies
+       Go to "IAM"-->Roles (by default)-->create custom role-->default aws service selected-->select lambda-->next-->type dynamo-->select 4 roles-->any role name-->create role.
+
+Step 2: Create dynamodb and search-->create table-->table_name(message)-->messageid(string)-->create table-->click on the message table-->explore table items-->visible.
+
+Step 3: : Duplicate the tab again-->write lambda(without the server requirement) fxn-->search it-->create function(write)-->author from scratch-->fxn_name-->nodejs only-->click Change default execution role-->use existing role-->create it->copy the 1st code
+
+const AWS=require('aws-sdk');
+const ddb=new AWS.DynamoDB.DocumentClient({region:'us-east-1'});
+exports.handler=async(event,context,callback)=>{
+    const requestId=context.awsRequestId;
+    await createMessage(requestId).then(()=>{
+        
+    callback(null,{
+        statusCode:201,
+        body:'',
+        headers:{
+            'Access-Control-Allow-Origin':'*'
+        }
+    })
+ 
+    }).catch((err)=>{
+        console.error(err)
+    }); 
+};
+
+function createMessage(requestId){
+    const params={
+        TableName:'message',
+        Item:{
+            'messageid':requestId,
+            'message':'Hello Clients'
+            
+        }
+    }
+    return ddb.put(params).promise();
+}
+
+Step 4: Read function-->now copy second code within the code.
+
+const AWS=require('aws-sdk');
+const ddb=new AWS.DynamoDB.DocumentClient({region:'us-east-1'});
+exports.handler=async(event,context,callback)=>{
+
+    await readMessage().then(data=>{
+        data.Items.forEach(function(item){
+        
+        console.log(item.message)   
+        });
+        
+        callback(null,{
+        statusCode:201,
+        body:data.Items,
+        headers:{
+            'Access-Control-Allow-Origin':'*',
+        },
+    })
+
+        
+        
+    }).catch((err)=>{
+        console.error(err);
+    })
+};
+
+function readMessage(){
+    const params={
+        TableName:'message',
+      Limit:10
+            
+        }
+    return ddb.scan(params).promise();
+}
+
+-->deploy and test it will get the message.
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,22 @@
+Step 1: Open billing dashboard with our own root account
+Step 2: Go to billing preferences
+           →Receive free tier usage (select)
+           →Give root account email address
+           →Select (option) receive billing alerts
+Step 3: Search for cloud watch
+           →Go to billing 
+           →Create alarm 
+           →Currency
+           →Usd 
+           →Threshold to 1$ 
+           →Click next
+Step 4: Create new topic 
+          →name as: Billing_Alerts
+          →End point: email address 
+          →Create topic 
+          →View in “sns” console under topics 
+          →Click next 
+          →I can add name and 
+Description : Alert me whenever my usage goes above 1$ through email.
+
+

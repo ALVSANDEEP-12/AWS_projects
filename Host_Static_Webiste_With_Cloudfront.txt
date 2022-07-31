@@ -1,0 +1,25 @@
+Host a Static Website With Cloud Front
+
+Why cloud front?
+ans: To reduce the latency we use cloudfront.
+-->disable public access.. and enable versioning.
+
+Step 1: Create bucket.
+Step 2: Block all public access.
+Step 3: Enable versioning
+         -->create bucket
+         -->go to bucket upload your files
+         -->html file(which is present)
+Step 4: Properties-->no bucket policy
+Step 5: Search cloud front (global content delivery)
+         -->create distribution
+         -->origin 
+         -->domain-->visible-->yes strictly go with cloud front
+         -->create new OAI (origin access identity)
+         -->create-->yes update bucket policy
+         -->settings-->should be enable all edge locations
+         -->create now
+Step 6: Go to buckets-->permissions-->policies are enabled
+Step 7: Distribution domain name(paste).
+
+

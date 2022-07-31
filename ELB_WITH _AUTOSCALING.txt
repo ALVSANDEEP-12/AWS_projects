@@ -1,0 +1,64 @@
+Elastic load Balancer(equally distribute the load to machine 1 and machine 2):
+-->creating launch template for auto scaling
+  from incoming requests elb loads the distribution to all machines.
+ mach1 and mach2--->load distribution
+ mach3 and mach4--->Auto scaling through template...
+ now ataching the auto scaling to the load balancer 
+
+STEP 1:create Ec-2 instaces(machines) with linux machine-->launch instance-->opt to the old service at the top position-->AMI LINUX-->t2.micro-->no.of.instances=1,default vpc should be selected,enable public Ip,paste the user data(custom data)
+#! /bin/bash
+sudo yum update -y
+sudo yum install -y httpd.x86_64
+sudo service httpd start
+sudo service httpd enable
+echo "<h1>Welcome to AWS class: ELB1</h1>" | sudo tee /var/www/html/index.html
+
+-->default storage-->Add Tags-->key(Name),value(Machine1) 
+-->Security Group(ELB-Machine-SG) same for description-->All traffic,Anywhere-->launch it-->new key name.
+
+STEP 2:create another Ec-2 instaces(machines) with linux machine-->launch instance-->opt to the old service at the top position-->AMI LINUX-->t2.micro-->no.of.instances=1,default vpc should be selected,enable public Ip,paste the user data(custom data)
+#! /bin/bash
+sudo yum update -y
+sudo yum install -y httpd.x86_64
+sudo service httpd start
+sudo service httpd enable
+echo "<h1>Welcome to AWS class: ELB2</h1>" | sudo tee /var/www/html/index.html
+
+-->default storage-->Add Tags-->key(Name),value(Machine2)
+-->select exisisting security group-->Launch-->Machine2 as key name.
+
+STEP 3: click on machine1-->copy paste the public ip in browser and similar for machine 2
+   -----------------"duplicate this page"-------------------
+
+STEP 4:click on load Balancers from left panel-->create load balancer-->Application LB("THE REQUEST OF THE APPLICATION WILL BE PASSED THROUGH HTTP AND HTTPS")-->LBNAME(Train-Lb)-->check all the things for mapping i.e..us east -1 etc.-->Select SG which was already created in ec2 instance-->create target group(open in new tab)-->TGNAME(train-TG)-->Next-->Select the both machines-->click Include as pending below-->Create TG-->"NOW ATTACH TO LOAD BALANCER"-->Now go to listener and routing--> select train-TG-->create a load balancer-->click target group-->train-TG(open)-->refersh page-->should move to healthy state-->let's check whether the distribution happened or not
+
+STEP 5:Find the option DNS name-->copy-->paste-->Refresh it displays first ELB1 And ELB2
+
+      ------->IF TWO MACHINES ARE NOT WORKING i.e..Mach1 and Mach2<-----------
+
+STEP 6: Go With the option for Auto Scaling with Template for Mach3 and Mach4 then ELB is attached then it will equally ditstributed for m1,m2,m3,m4(machines)
+   -->launch temp(giving config for machines)
+   -->Auto Scaling is for no.of.instances to specify
+
+ i)Launch-->train-template-->browse more AMI's-->Linux machine-->t2.micro-->key pair select-->machine1-->select 1st subnet-->Select SG which was already created-->Advanced network config-->Auto-Assign public should be enabled-->Advanced details-->custom data-->paste the data 
+#! /bin/bash
+sudo yum update -y
+sudo yum install -y httpd.x86_64
+sudo service httpd start
+sudo service httpd enable
+echo "<h1>Welcome to AWS class: ELB 3 & 4</h1>" | sudo tee /var/www/html/index.html
+
+   -->Create Template
+
+ii)create auto scaling-->train-autoscale-->drag template-->next-->select all the subnets-->next-->Attach existing LB-->train-TG-->next-->2(Des cap),2(min cap),4(max cap)-->next-->create it-->(Attach Autoscaling to Target Groups)-->Registered Targets-->select which are not registered-->Include as pendig below-->four targets shown-->perfectly healthy-->copy DNS
+
+
+
+
+
+
+
+
+
+
+

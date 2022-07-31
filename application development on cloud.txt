@@ -1,0 +1,289 @@
+1.Create a windows ec2 instance and connect it to rdp client..
+
+storage 30
+
+security -->allowing inbound traffic
+add rule-->all traffic -->anywhere (sg1)
+
+download new key pair
+
+launch
+
+instance id -click(details)
+
+connect-->rdp client
+
+connect using rdp client
+
+download remote desktop file
+
+get pwd-->browse keypair
+
+pwd --generated
+
+open rdp-->connect-->paste-->pwd-->yes-->system is ready
+
+goto folder of new desktop-->only c drive present
+
+open server manager
+
+click on add roles and 
+click next
+installation type is role based
+next
+select IAAS(web server)
+add features-->next-->next-->install
+
+
+index.html-->save-->copy-->paste in windows server
+
+open c drive-->initpub-->www root folder is present--Paste index.html-->remove other files
+
+
+Tutorial:(cloud formation)
+1.cloud formation
+2.create manage resources and templates
+3.create a stack
+4.template is ready
+5.upload file 
+6.copy template in notepad
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A sample template
+Resources:
+  MyEC2Instance: #An inline comment
+    Type: "AWS::EC2::Instance"
+    Properties: 
+      ImageId: "ami-0cff7528ff583bf9a" #Another comment -- This is a Linux AMI
+      InstanceType: t2.micro
+      KeyName: keypair
+      BlockDeviceMappings:
+        -
+          DeviceName: /dev/sdm
+          Ebs:
+            VolumeType: io1
+            Iops: 200
+            DeleteOnTermination: false
+            VolumeSize: 20
+
+7.save file yaml format
+
+8.go to ec2 -- try to launch instance--copy ami under launch instance in image id
+
+9.key pairs--m1 is available or create a new key pair under "keyname"
+
+now upload the file(template.yaml)
+
+view in design--tells us mistakes..
+
+click next-->stack name(test)
+
+Name -- cloud fromation under tags section
+
+create--->stack-->status user initated
+
+instance panel--check created or not..
+
+Note:dont delete default vpc
+
+terminate all instances...
+
+****Host a website with or without Cloud Front****:
+--> S3 Static website hosting without cloud front
+  i)create bucket
+  ii)upload files
+  iii)files as a public
+  iv)properties-->enable:ACL,enable public access,enable versioning
+v)enable the static website hosting and add index.html 
+vi)make public enable Acl
+
+Why cloud front?
+ans: To reduce the latency we use cloudfront.
+-->disable public access.. and enable versioning.
+
+1)create bucket.
+2)block all public access.
+3)enable versioning-->create bucket-->go to bucket upload our files-->html file
+4)properties-->no bucket policy
+5)search cloud front(global content delivery)-->create distribution-->origin domain-->visible-->yes strictly go with cloud front-->create new OAI(origin access identity)-->create-->yes update bucket policy-->settings-->should be enable all edge locations-->create now
+6)go to buckets-->permissions-->policies are enabled
+7)distribution domain name(paste).
+
+what is the purpose of roles and users?
+users:assign permissions-->root account-->read access or write access.
+roles:service to service agreement
+Dynamodb and lambda-->we need roles.
+
+1.role creation for communication(connect dynamodb and lambda)
+2.dynamodb(nosql)-->tablename and key value and -->store the values
+3.lambda
+
+
+step 1:create role any name attach 4 policies
+  go to "IAM"-->Roles(bydefault)-->create custom role-->default aws service selected-->select lambda-->next-->type dynamo-->select 4 roles-->any role name-->create role.
+
+step 2:create dynamodb and search-->create table-->table_name(message)-->messageid(string)-->create table-->click on the message table-->explore table items-->visible
+
+step 3:duplicate the tab again-->write lambda(without the server requirement) fxn-->search it-->create fxn(write)-->author fromscratch-->fxn_name-->nodejs only-->click Change default execution role-->use exsisting role-->create it-->copy the 1st code
+const AWS=require('aws-sdk');
+const ddb=new AWS.DynamoDB.DocumentClient({region:'us-east-1'});
+exports.handler=async(event,context,callback)=>{
+    const requestId=context.awsRequestId;
+    await createMessage(requestId).then(()=>{
+        
+    callback(null,{
+        statusCode:201,
+        body:'',
+        headers:{
+            'Access-Control-Allow-Origin':'*'
+        }
+    })
+ 
+    }).catch((err)=>{
+        console.error(err)
+    }); 
+};
+
+function createMessage(requestId){
+    const params={
+        TableName:'message',
+        Item:{
+            'messageid':requestId,
+            'message':'hello sandeep'
+            
+        }
+    }
+    return ddb.put(params).promise();
+}
+
+-->check the region in code-->messageid-->table name check-->deploy the code-->test-->give event name-->again test-->status code will gives as "201"-->we can update through again deploy and test
+
+step 4:read fxn-->now copy second code within the code-->
+const AWS=require('aws-sdk');
+const ddb=new AWS.DynamoDB.DocumentClient({region:'us-east-1'});
+exports.handler=async(event,context,callback)=>{
+
+    await readMessage().then(data=>{
+        data.Items.forEach(function(item){
+        
+        console.log(item.message)   
+        });
+        
+        callback(null,{
+        statusCode:201,
+        body:data.Items,
+        headers:{
+            'Access-Control-Allow-Origin':'*',
+        },
+    })
+
+        
+        
+    }).catch((err)=>{
+        console.error(err);
+    })
+};
+
+function readMessage(){
+    const params={
+        TableName:'message',
+      Limit:10
+            
+        }
+    return ddb.scan(params).promise();
+}
+
+-->deploy and test it will get the message..
+
+Cognito:(provides the user validation during the website access)
+trusted advisor: recommend us the cost optimization-->service/free limits will recommend to us.
+
+cloudwatch:"Records the application events"
+
+-->view logs in cloudwatch in lambda
+
+cloudtrail:user activity tracked
+
+cloudconfig:Config is focused on the configuration of your AWS resources and reports with detailed snapshots on how your resources have changed
+
+configure:empty box-->fill the user data-->scurity group -->all traffic enabled-->download key pair-->public ip-->paste it
+
+codeguru:
+to improve code quality and identify an application's most expensive lines of code.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

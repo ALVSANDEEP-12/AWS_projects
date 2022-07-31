@@ -1,0 +1,20 @@
+AWS CloudFormation simplifies provisioning and management on AWS. I can create templates for the service or application architectures you want and have AWS CloudFormation use those templates for quick and reliable provisioning of the services or applications (called “stacks”).
+
+NOTE:Create a key pair first.
+
+Step 1: Create Stack and choose the option Create template in Designer.
+Step 2: Paste the JSON code in “Template” tab i.e..
+ can get the code which is named as "new.json" format below.
+
+Step 3: Create a stack that at top left button and already file location is 
+updated-->next-->S3-EC2-SecurityGroup(stack name)
+
+I had created keypair already from ec2 instances i.e..” projectkey”
+
+Step 4: Click ->Create Stack
+Step 5: Check EC2, S3 bucket and Security group created or not?
+
+
+
+
+
